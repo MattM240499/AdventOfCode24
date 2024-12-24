@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
 
+namespace AdventOfCode.Day17;
+
 public class Computer
 {
     public BigInteger RegistryA { get; set; }
