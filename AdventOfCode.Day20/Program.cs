@@ -1,7 +1,4 @@
-﻿// Example
-
-using System.Drawing;
-using AdventOfCode.Day20;
+﻿using AdventOfCode.Day20;
 
 // var inputFile = "example.txt";
 var inputFile = "input.txt";
