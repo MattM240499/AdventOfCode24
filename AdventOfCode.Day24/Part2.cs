@@ -13,23 +13,10 @@ public class Part2
 
         var (inputValues, inputInstructions) = Shared.ParseInput(lines);
         
-        var expectedAnswer = GetExpectedAnswer(inputValues);
-        
-        Part2FullAdderVerificationAttempt(inputValues, inputInstructions);
+        VerifyFullAdderStructure(inputValues, inputInstructions);
     }
 
-    private static long GetExpectedAnswer(Dictionary<string, bool> values)
-    {
-        var xData = GetData(values, 'x');
-        var yData = GetData(values, 'y');
-
-        var xInput = Convert.ToInt64(xData, 2);
-        var yInput = Convert.ToInt64(yData, 2);
-        var expectedAnswer = xInput + yInput;
-        return expectedAnswer;
-    }
-
-    private static void Part2FullAdderVerificationAttempt(Dictionary<string, bool> values,
+    private static void VerifyFullAdderStructure(Dictionary<string, bool> values,
         List<Instruction> instructions)
     {
         var xValues = values.Keys.Where(v => v.StartsWith('x')).OrderBy(x => x).ToArray();
@@ -79,6 +66,7 @@ public class Part2
                 swaps.Add((swap.instruction1.ResultOperand, swap.instruction2.ResultOperand));
             }
         }
+        // Should also check the last part going up to z but I am lazy...
         
         Console.WriteLine("Output: " + string.Join(",", swaps.SelectMany(s => new[]{s.Item1, s.Item2}).OrderBy(s => s)));
     }
