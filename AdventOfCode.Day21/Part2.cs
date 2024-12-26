@@ -4,38 +4,40 @@ public class Part2
 {
     public static void Run(string[] codes)
     {
-        var cache = new RobotCache();
+        var cache = new RobotSolver();
         // Part 2
-        List<(string Code, long ComplexityScore)> codeComplexityScore = [];
+        List<(string Code, long Length, long CodeNumber, long ComplexityScore)> codeComplexityScores = [];
         foreach (var code in codes)
         {
-            var shortestSequenceLength = FindShortestSequenceLength(code, cache);
+            var shortestSequenceLength = FindShortestSequenceLength(code, cache, 25);
             var codeNumberPart = long.Parse(code[..^1]);
-            codeComplexityScore.Add((code, shortestSequenceLength * codeNumberPart));
+            codeComplexityScores.Add((code, shortestSequenceLength, codeNumberPart, shortestSequenceLength * codeNumberPart));
         }
 
-        var sum = codeComplexityScore.Sum(c => c.ComplexityScore);
+        foreach (var codeComplexityScore in codeComplexityScores)
+        {
+            Console.WriteLine($"Code: {codeComplexityScore.Code}: {codeComplexityScore.Length} * {codeComplexityScore.CodeNumber} = {codeComplexityScore.ComplexityScore}");
+        }
         
-        Console.WriteLine($"Sum: {sum}");
+        var sum = codeComplexityScores.Sum(c => c.ComplexityScore);
+        
+        Console.WriteLine($"Final sum: {sum}");
     }
 
-    public static long FindShortestSequenceLength(string code, RobotCache cache)
+    public static long FindShortestSequenceLength(string code, RobotSolver solver, int robots)
     {
-        var moves = GetNumericalKeypadSequences(code);
-        var smallestSolution = long.MaxValue;
-        foreach (var moveSequence in moves)
+        var numpadMoveSequences = GetNumericalKeypadSequences(code);
+        var shortestSolution = long.MaxValue;
+        foreach (var moveSequence in numpadMoveSequences)
         {
-            IEnumerable<(char LeftButton, char RightButton)> pairs = moveSequence.Append('A').Select((c, i) => (
-                LeftButton: i == 0 ? 'A' : moveSequence[i - 1], 
-                RightButton: c));
-            var sum = pairs.Select(p => cache.CalculateLength(p.LeftButton, p.RightButton, 2)).Sum();
-            if (sum < smallestSolution)
+            var length = solver.CalculateOptimalLength(moveSequence, robots);
+            if (length < shortestSolution)
             {
-                smallestSolution = sum;
+                shortestSolution = length;
             }
         }
 
-        return smallestSolution;
+        return shortestSolution;
     }
     
     public static string[] GetNumericalKeypadSequences(string inputs)
@@ -46,7 +48,7 @@ public class Part2
         {
             var targetButton = inputs[i];
 
-            var newMoves = RobotCache.GetMoves(startButton, targetButton, KeyPad.NumericalKeypad);
+            var newMoves = RobotSolver.GetMoves(startButton, targetButton, KeyPad.NumericalKeypad);
             startButton = targetButton;
 
             moves = (from move in moves
